@@ -13,6 +13,7 @@ import com.account.accountservice.dto.Loans;
 import com.account.accountservice.repository.AccountsRepository;
 import com.account.accountservice.service.client.CardsFeignClient;
 import com.account.accountservice.service.client.LoansFeignClient;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -86,6 +87,7 @@ public class AccountController {
     }
 
     @PostMapping("/myCustomerDetails")
+    @CircuitBreaker(name = "detailsForCustomerSupportApp")
     private CustomerDetails myCustomerDetailsFallBack(@RequestBody Customer customer) {
         Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId());
         List<Loans> loans = loansFeignClient.getLoansDetails(customer);
